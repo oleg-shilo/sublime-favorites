@@ -4,27 +4,21 @@ import codecs
 import os
 import shutil
 import sys
-import zipfile
 from os import path
 from sublime import Region
 import socket
 import subprocess
 import errno
-from socket import error as socket_error
 
-# todo
-# addpath in the item tooltip
-# manage selection ob double-click
 # version = 1.0.0
 
 if sys.version_info < (3, 3):
     raise RuntimeError('Favorites works with Sublime Text 3 only.')
 
 # ============================================================
-py_syntax = 'Packages/Python/Python.tmLanguage'
-md_syntax = 'Packages/Text/Plain text.tmLanguage'
-cs_syntax = 'Packages/C#/C#.tmLanguage'
+fav_syntax = 'Packages/Favorites/fav.tmLanguage'
 plugin_name = 'favorites'
+panel_name = 'Favorites'
 
 # -----------------
 def favorites_data_path():
@@ -56,11 +50,11 @@ def get_favorite_path(index):
 def open_favorite_path(index):
     file = get_favorite_path(index)
     if file:
+        focus_prev_view_group()
         open_path(file)
 # -------------------------
 def add_active_view(arg=None):
     lines = get_favorites()
-    print('adding', arg)
     if arg:
         file = arg
     else:
@@ -71,7 +65,7 @@ def add_active_view(arg=None):
         set_favorites(lines)
         refresh_favorites() 
 # -------------------------
-def edit_favorites():
+def focus_prev_view_group():
     try:   
         if favorites_listener.last_active_view:
             if favorites_listener.last_active_view == get_panel_view():
@@ -81,7 +75,22 @@ def edit_favorites():
             sublime.active_window().focus_group(group)
     except:
         pass
-
+# -------------------------
+def edit_favorites():
+    focus_prev_view_group()
+    open_path(favorites_data_path())
+# -------------------------
+def remove_from_favorites(arg):
+    file = arg
+    lines = []
+    for file in get_favorites():
+        if file != arg:
+            lines.append(file)
+    set_favorites(lines)
+    refresh_favorites() 
+# -------------------------
+def edit_favorites():
+    focus_prev_view_group()
     open_path(favorites_data_path())
 # -------------------------
 def refresh_favorites():
@@ -99,7 +108,7 @@ def open_path(file):
 tooltip_template = """
                         <body id=show-scope>
                             <style>
-                            body { margin: 0; padding: 5; }
+                            body { margin: 0; padding: 20; }
                              p { margin-top: 0;}
                              </style>
                             %s
@@ -110,25 +119,34 @@ class show_favorites(sublime_plugin.TextCommand):
     def run(self, edit):
         show_panel.run(self, edit);        
 # -----------------
+items_offset = 2
+# -----------------
 class favorites_generator(sublime_plugin.TextCommand):
     def run(self, edit):
         panel_view = self.view
 
         lines = get_favorites()
 
-        map = "Add   Edit   Refresh\n"        
-        map += "---------------------"        
+        map = "Add   Edit"        
+        map += "\n---------------"        
         for line in lines:
             title = path.basename(line)
             map += "\n"+title
 
-        map_syntax = md_syntax
+        # map_syntax = md_syntax
+        map_syntax = fav_syntax
+
+        panel_view.set_read_only(False)
+        panel_view.set_status('toggle_readonly', '')
 
         all_text = sublime.Region(0, panel_view.size())
         panel_view.replace(edit, all_text, map)
         panel_view.set_scratch(True)
 
         panel_view.assign_syntax(map_syntax)
+
+        panel_view.set_read_only(True)
+        panel_view.set_status('toggle_readonly', 'Readonly')
 # -----------------
 class favorites_listener(sublime_plugin.EventListener):
     # -----------------
@@ -181,28 +199,33 @@ class favorites_listener(sublime_plugin.EventListener):
 
             else: 
                 file = get_favorite_path(row-2)
-                if file:
 
+                if file:
                     link_open = file+'<br>'
                     link_open += '<a href="'+file+'">Open in active window</a><br>'
-                    link_open += '<a href="remove.'+str(row)+'">Remove from the favorites</a>'
+                    link_open += '<a href="remove.'+file+'">Remove from the favorites</a>'
 
                     html = tooltip_template % (link_open)
 
                     def open(arg):
                         view.hide_popup()
-                        open_path(arg)
+                        if arg.startswith('remove.'):
+                            remove_from_favorites(file)
+                        else:
+                            open_path(arg)
 
                     view.show_popup(html, location=point, flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY, max_width=600, on_navigate=open)
     # -----------------
     def on_post_text_command(self, view, command_name, args):
-        # process double-click on code panel view
+        # process double-click on code panel view`
         if view.file_name() == panel_file():
             if command_name == 'drag_select' and 'by' in args.keys() and args['by'] == 'words':
                 point = view.sel()[0].begin()
                 row, col = view.rowcol(point)
+                view.sel().clear()
+
                 if row > 1:
-                    open_favorite_path(row-2)
+                    open_favorite_path(row - items_offset)
 
                 elif row == 0:
                     command = view.substr(view.word(point)).lower()
@@ -217,12 +240,8 @@ class favorites_listener(sublime_plugin.EventListener):
                     elif command == 'refresh':
                         refresh_favorites()
 
-            # view.sel().clear()
-# 
-# 
-# 
-# 
-# 
+
+######################################################################################################################### 
 # 
 # ============================================================
 # Layout management
@@ -240,10 +259,10 @@ def panel_file():
         plugin_dir = 'cache'
         plugin_dir = os.path.join(os.getcwd(), plugin_dir)
 
-    data_dir = path.join(plugin_dir, plugin_name)
+    data_dir = path.join(plugin_dir, panel_name)
     if not path.exists(data_dir):
         os.makedirs(data_dir)
-    return path.join(data_dir, plugin_name)
+    return path.join(data_dir, panel_name)
 # -----------------
 def set_layout_columns(count, coll_width=0.75):
 

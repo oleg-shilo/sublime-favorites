@@ -1,0 +1,22 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: Fav
+file_extensions:
+  - ec
+  - fav
+scope: text.html.favorites
+contexts:
+  main:
+    - match: ([#]{1,6})(.*)+(:)(\d+)
+      captures:
+        1: string.other.link.title.markdown
+        2: punctuation.definition.constant.markdown
+        3: entity.name.section
+        4: entity.name.section
+
+    - match: '\b(Add|Edit|Refresh)\b'
+      # scope: link
+      scope: HTML (Underscore)
+    
+      # scope: keyword.control.example-c
