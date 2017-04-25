@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "Favorites: Toggle Visibility",
+        "command": "show_favorites"
+    }
+]

@@ -1,0 +1,3 @@
+[
+    { "keys": ["alt+shift+f", "alt+shift+f"], "command": "show_favorites" }
+]
