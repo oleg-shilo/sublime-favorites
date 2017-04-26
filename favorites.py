@@ -16,7 +16,9 @@ if sys.version_info < (3, 3):
     raise RuntimeError('Favorites works with Sublime Text 3 only.')
 
 # ============================================================
-fav_syntax = 'Packages/Favorites/fav.tmLanguage'
+package_name = path.basename(path.dirname(__file__))
+
+fav_syntax = 'Packages/'+package_name+'/fav.tmLanguage'
 plugin_name = 'favorites'
 panel_name = 'Favorites'
 
