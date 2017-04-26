@@ -16,7 +16,4 @@ contexts:
         4: entity.name.section
 
     - match: '\b(Add|Edit|Refresh)\b'
-      # scope: link
-      scope: HTML (Underscore)
-    
-      # scope: keyword.control.example-c
+      scope: keyword.control.example-c

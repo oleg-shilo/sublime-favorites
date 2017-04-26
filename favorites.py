@@ -137,16 +137,13 @@ class favorites_generator(sublime_plugin.TextCommand):
         map_syntax = fav_syntax
 
         panel_view.set_read_only(False)
-        panel_view.set_status('toggle_readonly', '')
 
         all_text = sublime.Region(0, panel_view.size())
         panel_view.replace(edit, all_text, map)
         panel_view.set_scratch(True)
 
         panel_view.assign_syntax(map_syntax)
-
         panel_view.set_read_only(True)
-        panel_view.set_status('toggle_readonly', 'Readonly')
 # -----------------
 class favorites_listener(sublime_plugin.EventListener):
     # -----------------
