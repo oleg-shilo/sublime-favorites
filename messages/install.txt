@@ -1,0 +1,25 @@
+Welcome to Favorites!
+
+For more information see the README.md at https://github.com/oleg-shilo/sublime-favorites
+---------------------------------------------------------------------------------------
+A plugin for displaying Favorites (list of frequently used documents) in the Sublime Text 3 editor.
+
+While plugin functionality overlaps with some other similar ST3 plugins, it has vary strong distinction - it offers visual management of the Favorites' items.
+
+Usage
+The plugin uses a dedicated view group Favorites (on right side) to mimic a "side bar" with the content (code tree). 
+
+* Toggle Visibility
+Show/Hide favorites panel either with Command Palette or by the configured shortcut (e.g. [alt+f, alt+f]).
+
+* Add active document to favorites
+Double-click the Add command at the top of the panel.
+
+* Remove the item (document) from the favorites.
+Hover over the document item in the panel and then click Remove from... on the tooltip.
+
+* Open the item (document)
+Double-click the document item in the panel.
+
+*Edit Favorites data file directly
+Double-click the Edit command at the top of the panel.
