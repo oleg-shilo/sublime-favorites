@@ -34,22 +34,22 @@ To start working with Favorites just make the favorites panel visible (e.g. [alt
 ## Functionality
 
 1. *Toggle Visibility*  
-  - Show/Hide favorites panel either with *Command Palette* or by the configured shortcut (e.g. [alt+f, alt+f]). 
+    Show/Hide favorites panel either with *Command Palette* or by the configured shortcut (e.g. [alt+f, alt+f]). 
 
-2. *Add active document to favorites*
-  - Double-click the `Add` command at the top of the panel.
-  - Alternatively, hover over `Add` command at the top of the panel and then click `Add active view...` on the tooltip.
+2. *Add active document to favorites*  
+    Double-click the `Add` command at the top of the panel.  
+    Alternatively, hover over `Add` command at the top of the panel and then click `Add active view...` on the tooltip.
 
-3. Remove the item (document) from the favorites.
-  - Hover over the document item in the panel and then click `Remove from...` on the tooltip.
+3. Remove the item (document) from the favorites.  
+    Hover over the document item in the panel and then click `Remove from...` on the tooltip.
 
-4. *Open the item (document)*
-  - Double-click the document item in the panel.
-  - Alternatively, hover the document item in the panel and then click `Open...` on the tooltip.
+4. *Open the item (document)*  
+    Double-click the document item in the panel.  
+    Alternatively, hover the document item in the panel and then click `Open...` on the tooltip.
 
-5. *Edit Favorites data file directly*
-  - Double-click the `Edit` command at the top of the panel.
-  - Alternatively, hover over `Edit` command at the top of the panel and then click `Edit...` on the tooltip.
+5. *Edit Favorites data file directly*  
+    Double-click the `Edit` command at the top of the panel.  
+    Alternatively, hover over `Edit` command at the top of the panel and then click `Edit...` on the tooltip.
 
 
 ## Settings
