@@ -15,7 +15,7 @@
                             {
                                 "command": "open_file",
                                 "args": {
-                                    "file": "${packages}/Favorites/code_map.sublime-settings"
+                                    "file": "${packages}/Favorites/favorites.sublime-settings"
                                 },
                                 "caption": "Settings – Default"
                             },
