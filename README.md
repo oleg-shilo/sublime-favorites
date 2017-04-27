@@ -2,7 +2,7 @@
 
 A plugin for displaying Favorites (list of frequently used documents) in the [Sublime Text 3](http://sublimetext.com "Sublime Text") editor.
 
-While plugin functionality overlaps with some other similar ST3 plugins, it has vary strong distinction - it offers visual management of the Favorites' items. 
+While plugin functionality overlaps with some other similar ST3 plugins, it has very strong distinction - it offers visual management of the Favorites' items. 
 
 ## Installation
 
