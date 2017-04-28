@@ -10,7 +10,7 @@ import socket
 import subprocess
 import errno
 
-# version = 1.0.0
+# version = 1.0.1
 
 if sys.version_info < (3, 3):
     raise RuntimeError('Favorites works with Sublime Text 3 only.')
@@ -23,6 +23,9 @@ fav_syntax = 'Packages/'+package_name+'/fav.tmLanguage'
 plugin_name = 'favorites'
 panel_name = 'Favorites'
 
+def using_Favorite_Files_data():
+    return sublime.load_settings(plugin_name+".sublime-settings").get('favorite_files_integration_enabled', True)
+
 # -----------------
 def favorites_data_path():
     file = os.path.join(sublime.packages_path(), 'User', 'favorites.txt')
@@ -31,18 +34,53 @@ def favorites_data_path():
             f.write('')
     return file
 # -------------------------
+def show_integration_constrains_message():
+    sublime.error_message('Since you are using "Favorite Files" plugin integration '+
+                          'you have to use "Favorite Files" commands via command palette '+
+                          'to add, remove or edit the file list.')
+    
+# -------------------------
+def get_favorite_files_data():
+    """ 
+        Integration with Favorit_Files plugin
+        It goes only as far as reading its data file, flattening it and allowing to 
+        open files on double-click on the item in the Favorites panel  
+    """
+    import json
+
+    file_name = os.path.join(sublime.packages_path(), 'User', 'favorite_files_list.json')
+    
+    with open(file_name) as data_file:    
+        data = json.load(data_file)
+
+    result = []    
+    for f in data["files"]:
+        result.append(f)
+         
+    for name in data["groups"].keys():
+        for f in data["groups"][name]:
+            result.append(f)
+
+    return result
+# -------------------------
 def get_favorites():
-    file = favorites_data_path()
-    lines = []
-    if os.path.exists(file):
-        with codecs.open(file, "r", encoding='utf8') as f:
-            lines = f.read().strip().split('\n')
-    return [x.strip() for x in lines]
+    if using_Favorite_Files_data():
+        return get_favorite_files_data()
+    else:    
+        file = favorites_data_path()
+        lines = []
+        if os.path.exists(file):
+            with codecs.open(file, "r", encoding='utf8') as f:
+                lines = f.read().strip().split('\n')
+        return [x.strip() for x in lines]
 # -------------------------
 def set_favorites(lines):
-    file = favorites_data_path()
-    with codecs.open(file, "w", encoding='utf8') as f:
-        f.write('\n'.join(lines))
+    if using_Favorite_Files_data():
+        show_integration_constrains_message()        
+    else:    
+        file = favorites_data_path()
+        with codecs.open(file, "w", encoding='utf8') as f:
+            f.write('\n'.join(lines))
 # -------------------------
 def get_favorite_path(index):
     lines = get_favorites()
@@ -79,10 +117,6 @@ def focus_prev_view_group():
     except:
         pass
 # -------------------------
-def edit_favorites():
-    focus_prev_view_group()
-    open_path(favorites_data_path())
-# -------------------------
 def remove_from_favorites(arg):
     file = arg
     lines = []
@@ -93,8 +127,11 @@ def remove_from_favorites(arg):
     refresh_favorites() 
 # -------------------------
 def edit_favorites():
-    focus_prev_view_group()
-    open_path(favorites_data_path())
+    if using_Favorite_Files_data():
+        show_integration_constrains_message()        
+    else:
+        focus_prev_view_group()
+        open_path(favorites_data_path())
 # -------------------------
 def refresh_favorites():
     panel_view = get_panel_view()
@@ -236,7 +273,6 @@ class favorites_listener(sublime_plugin.EventListener):
 
                     elif command == 'edit':
                         edit_favorites()
-
                     elif command == 'refresh':
                         refresh_favorites()
 
