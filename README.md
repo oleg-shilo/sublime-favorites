@@ -57,7 +57,7 @@ To start working with Favorites just make the favorites panel visible (e.g. [alt
 You can also configure plugin to:
 1. Hide the group on closing the panel when it is the only view in the group.
 2. Always place favorites panel in the individual most-right column. Only up to 4 columns layout is supported.
-3. Use `Favorite Files` plugin data file.<br> 
+3. Use [Favorite Files](https://github.com/facelessuser/FavoriteFiles) plugin data file.<br> 
 The integration is limited to reading `Favorite Files` data file, flattening it and allowing to open files on double-click on the item in the Favorites panel.
 
 _favorites.sublime-settings_
