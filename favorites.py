@@ -27,7 +27,7 @@ panel_name = 'Favorites'
 def favorites_data_path():
     file = os.path.join(sublime.packages_path(), 'User', 'favorites.txt')
     if not path.exists(file):
-        with open(favorites_data_path(), "w") as f:
+        with open(file, "w") as f:
             f.write('')
     return file
 # -------------------------
