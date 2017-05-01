@@ -1,0 +1,3 @@
+Features:
+
+1. Fixed Issue #1: Crash; nothing showing up in Favorites panel 
