@@ -1,4 +1,5 @@
 {
     "close_empty_group_on_closing_panel": true,
+    "favorite_files_integration_enabled": false,
     "show_in_new_group": true
 }

@@ -2,7 +2,7 @@
 
 A plugin for displaying Favorites (list of frequently used documents) in the [Sublime Text 3](http://sublimetext.com "Sublime Text") editor.
 
-While plugin functionality overlaps with some other similar ST3 plugins, it has vary strong distinction - it offers visual management of the Favorites' items. 
+While plugin functionality overlaps with some other similar ST3 plugins, it has a very strong distinction - it offers visual management of the Favorites' items. 
 
 ## Installation
 
@@ -57,12 +57,15 @@ To start working with Favorites just make the favorites panel visible (e.g. [alt
 You can also configure plugin to:
 1. Hide the group on closing the panel when it is the only view in the group.
 2. Always place favorites panel in the individual most-right column. Only up to 4 columns layout is supported.
+3. Use [Favorite Files](https://github.com/facelessuser/FavoriteFiles) plugin data file.<br> 
+The integration is limited to reading `Favorite Files` data file, flattening it and allowing to open files on double-click on the item in the Favorites panel.
 
 _favorites.sublime-settings_
 
 ```js
 {
     "close_empty_group_on_closing_panel": true, 
-    "show_in_new_group": true
+    "show_in_new_group": true,
+    "favorite_files_integration_enabled": false
 }
 ```

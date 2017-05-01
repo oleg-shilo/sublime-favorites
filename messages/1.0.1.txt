@@ -1,0 +1,12 @@
+Features:
+
+1. Added integration with `Favorite Files` plugin. 
+The integration is limited to using `Favorite Files` data file, flattening it and allowing to open files on double-click on the item in the Favorites panel.
+
+In order to enable `Favorite Files` integration set `favorite_files_integration_enabled` setting to true:
+```js
+{
+    "favorite_files_integration_enabled": true
+}
+```
+
