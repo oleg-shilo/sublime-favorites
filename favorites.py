@@ -85,7 +85,7 @@ def set_favorites(lines):
 def get_favorite_path(index):
     lines = get_favorites()
     if index < len(lines):
-        return lines[index];
+        return extract_path(lines[index]);
     return None
 # -------------------------
 def open_favorite_path(index):
@@ -145,6 +145,22 @@ def open_path(file):
     if view:
         sublime.active_window().focus_view(view)
 # -------------------------
+def extract_title(text):
+    if text:
+        parts = text.split('|')
+        if len(parts) == 1:
+            return path.basename(text)
+        else:    
+            return parts[0]
+# -------------------------
+def extract_path(text):
+    if text:
+        parts = text.split('|')
+        if len(parts) > 1:
+            return parts[len(parts)-1]
+        else:    
+            return text
+# -------------------------
 tooltip_template = """
                         <body id=show-scope>
                             <style>
@@ -170,8 +186,7 @@ class favorites_generator(sublime_plugin.TextCommand):
         map = "Add   Edit"        
         map += "\n---------------"        
         for line in lines:
-            title = path.basename(line)
-            map += "\n"+title
+            map += "\n"+extract_title(line)
 
         # map_syntax = md_syntax
         map_syntax = fav_syntax
