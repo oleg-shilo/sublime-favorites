@@ -163,7 +163,8 @@ def refresh_favorites():
 # -------------------------
 def open_all_favorites(per_project):
     
-    for file in get_favorites(per_project):
+    for item in get_favorites(per_project):
+        file = extract_path(item)
         view = sublime.active_window().find_open_file(file)
         if not view:
             view = sublime.active_window().open_file(file)
@@ -208,7 +209,56 @@ tooltip_template = """
 class show_favorites(sublime_plugin.TextCommand):
     def run(self, edit):
         show_panel.run(self, edit);        
-# -----------------
+# -------------------------
+# ======================================================
+class add_favorites(sublime_plugin.TextCommand):
+    # -----------------
+    def run(self, edit):
+        add_favorites.do(self.view, False)
+    # -----------------
+    def do(view, per_project):    
+        file = view.file_name()
+        if file:
+            add_active_view(file, per_project)
+        else:
+            sublime.error_message('You can add to favorites only view that has been saved.')
+# -------------------------
+class add_proj_favorites(sublime_plugin.TextCommand):
+    # -----------------
+    def is_enabled(self):
+         return self.view.window().project_file_name() != None
+    # -----------------
+    def run(self, edit):
+        edit_favorites(True)
+# -------------------------
+class edit_favorites_file(sublime_plugin.TextCommand):
+    # -----------------
+    def run(self, edit):
+        edit_favorites(False)
+# -------------------------
+class edit_proj_favorites_file(sublime_plugin.TextCommand):
+    # -----------------
+    def is_enabled(self):
+         return self.view.window().project_file_name() != None
+    # -----------------
+    def run(self, edit):
+        edit_favorites(True)
+# -------------------------
+class openall_favorites(sublime_plugin.TextCommand):
+    # -----------------
+    def run(self, edit):
+        open_all_favorites(False)
+# -------------------------
+class openall_proj_favoritese(sublime_plugin.TextCommand):
+    # -----------------
+    def is_enabled(self):
+         return self.view.window().project_file_name() != None
+    # -----------------
+    def run(self, edit):
+        open_all_favorites(True)
+# ======================================================
+
+# -------------------------
 items_offset = 2
 # -----------------
 class favorites_generator(sublime_plugin.TextCommand):

@@ -3,4 +3,33 @@
         "caption": "Favorites: Toggle Visibility",
         "command": "show_favorites"
     }
+    ,
+    {
+        "caption": "Favorites: Add active view (global)",
+        "command": "add_favorites"
+    }
+    ,
+    {
+        "caption": "Favorites: Add active view (project's)",
+        "command": "add_proj_favorites"
+    }
+    ,
+    {
+        "caption": "Favorites: Edit favorites (global)",
+        "command": "edit_favorites_file"
+    }
+    ,
+    {
+        "caption": "Favorites: Edit favorites (project's)",
+        "command": "edit_proj_favorites_file"
+    }
+    ,
+    {
+        "caption": "Favorites: Open all (global)",
+        "command": "openall_favorites"
+    },
+    {
+        "caption": "Favorites: Open all (project's)",
+        "command": "openall_proj_favoritese"
+    }
 ]
