@@ -27,11 +27,20 @@ def using_Favorite_Files_data():
     return sublime.load_settings(plugin_name+".sublime-settings").get('favorite_files_integration_enabled', True)
 
 # -----------------
-def favorites_data_path():
-    file = os.path.join(sublime.packages_path(), 'User', 'favorites.txt')
-    if not path.exists(file):
+def favorites_data_path(per_project):
+    file = None
+
+    if per_project:
+        project = sublime.active_window().project_file_name()
+        if project:
+            file = project + '.favorites'
+    else:
+        file = os.path.join(sublime.packages_path(), 'User', 'favorites.txt')
+    
+    if file and not path.exists(file):
         with open(file, "w") as f:
             f.write('')
+
     return file
 # -------------------------
 def show_integration_constrains_message():
@@ -63,29 +72,42 @@ def get_favorite_files_data():
 
     return result
 # -------------------------
-def get_favorites():
+def get_favorites(per_project):
     if using_Favorite_Files_data():
         return get_favorite_files_data()
     else:    
-        file = favorites_data_path()
+        file = favorites_data_path(per_project)
         lines = []
         if os.path.exists(file):
             with codecs.open(file, "r", encoding='utf8') as f:
-                lines = f.read().strip().split('\n')
+                content = f.read().strip()
+                if content != '':
+                    lines = content.split('\n')
+
         return [x.strip() for x in lines]
 # -------------------------
-def set_favorites(lines):
+def set_favorites(lines, per_project):
     if using_Favorite_Files_data():
         show_integration_constrains_message()        
     else:    
-        file = favorites_data_path()
+        file = favorites_data_path(per_project)
         with codecs.open(file, "w", encoding='utf8') as f:
             f.write('\n'.join(lines))
 # -------------------------
 def get_favorite_path(index):
-    lines = get_favorites()
+    # print(index)    
+    lines = get_favorites(False)
+    p_lines = get_favorites(True)    
+
     if index < len(lines):
         return extract_path(lines[index]);
+
+    index -= len(lines)
+    index -= items_offset # project favorites will have extra two lines in the header (items_offset)
+    if index >= 0 and index < len(p_lines) :    
+        # print(index, '/',len(p_lines))
+        return extract_path(p_lines[index]);
+
     return None
 # -------------------------
 def open_favorite_path(index):
@@ -94,17 +116,18 @@ def open_favorite_path(index):
         focus_prev_view_group()
         open_path(file)
 # -------------------------
-def add_active_view(arg=None):
-    lines = get_favorites()
+def add_active_view(arg=None, per_project=False):
     if arg:
         file = arg
     else:
         file = sublime.active_window().active_view().file_name()
     
+    lines = get_favorites(per_project)
     if not file in lines:
         lines.append(file)
-        set_favorites(lines)
-        refresh_favorites() 
+        set_favorites(lines, per_project)
+
+    refresh_favorites() 
 # -------------------------
 def focus_prev_view_group():
     try:   
@@ -117,21 +140,21 @@ def focus_prev_view_group():
     except:
         pass
 # -------------------------
-def remove_from_favorites(arg):
+def remove_from_favorites(arg, per_project=False):
     file = arg
     lines = []
-    for file in get_favorites():
+    for file in get_favorites(per_project):
         if file != arg:
             lines.append(file)
-    set_favorites(lines)
+    set_favorites(lines, per_project)
     refresh_favorites() 
 # -------------------------
-def edit_favorites():
+def edit_favorites(per_project):
     if using_Favorite_Files_data():
         show_integration_constrains_message()        
     else:
         focus_prev_view_group()
-        open_path(favorites_data_path())
+        open_path(favorites_data_path(per_project))
 # -------------------------
 def refresh_favorites():
     panel_view = get_panel_view()
@@ -149,15 +172,16 @@ def extract_title(text):
     if text:
         parts = text.split('|')
         if len(parts) == 1:
-            return path.basename(text)
+            return path.basename(text.strip())
         else:    
             return parts[0]
+    return ''
 # -------------------------
 def extract_path(text):
     if text:
         parts = text.split('|')
         if len(parts) > 1:
-            return parts[len(parts)-1]
+            return parts[len(parts)-1].strip()
         else:    
             return text
 # -------------------------
@@ -181,14 +205,20 @@ class favorites_generator(sublime_plugin.TextCommand):
     def run(self, edit):
         panel_view = self.view
 
-        lines = get_favorites()
+        lines = get_favorites(False)
 
         map = "Add   Edit"        
         map += "\n---------------"        
         for line in lines:
             map += "\n"+extract_title(line)
 
-        # map_syntax = md_syntax
+        project = sublime.active_window().project_file_name()    
+        if project:
+            map += '\n\n--- "'+path.basename(project).replace('.sublime-project', '" project')+' ---'        
+            p_lines = get_favorites(True)
+            for line in p_lines:
+                map += '\n' + extract_title(line)
+
         map_syntax = fav_syntax
 
         panel_view.set_read_only(False)
@@ -213,18 +243,27 @@ class favorites_listener(sublime_plugin.EventListener):
             row, col = view.rowcol(point)
             if row == 0:
                 
+                project = sublime.active_window().project_file_name()
+
                 callback = None
                 html = ""
                 command = view.substr(view.word(point)).lower()
                 if command == "add":
                     def add(arg):
                         view.hide_popup()
-                        add_active_view()
+                        per_project = (arg == 'add_to_proj')
+                        add_active_view(None, per_project)
                                             
                     file = sublime.active_window().active_view().file_name()
                     link_open = ''
-                    # link_open = file+'<br>'
-                    link_open += '<a href="add">Add active view ('+os.path.basename(file)+') to favorites</a>'
+                    if project:
+                        # link_open = file+'<br>'
+                        link_open += 'Add active view ('+os.path.basename(file)+')<br>'
+                        link_open += '&nbsp;&nbsp;<a href="add">to favorites</a><br>'
+                        link_open += '&nbsp;&nbsp;<a href="add_to_proj">to "'+os.path.basename(project).replace('.sublime-project', '')+'" project favorites</a>'
+                    else:
+                        link_open += '<a href="add">Add active view ('+os.path.basename(file)+') to favorites</a>'
+
 
                     html = tooltip_template % (link_open)
                     callback = add
@@ -232,9 +271,15 @@ class favorites_listener(sublime_plugin.EventListener):
                 elif command == "edit":
                     def refresh(arg):
                         view.hide_popup()
-                        edit_favorites()
+                        per_project = (arg == 'edit.proj')
+                        edit_favorites(per_project)
 
-                    html = tooltip_template % ('<a href="edit">Edit favorites file</a>')
+                    html_content = '<a href="edit">Edit favorites file</a>'
+                    if project:
+                        html_content += '<br><a href="edit.proj">Edit "'+os.path.basename(project).replace('.sublime-project', '')+'" project favorites file</a>'
+
+                    html = tooltip_template % (html_content)
+
                     callback = refresh
     
                 elif command == "refresh":
@@ -250,19 +295,23 @@ class favorites_listener(sublime_plugin.EventListener):
                 view.show_popup(html, location=point, flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY, max_width=600, on_navigate=callback)
 
             else: 
-                file = get_favorite_path(row-2)
+                index = row-items_offset
+                global_list = get_favorites(False)
+                per_project = (index >= len(global_list))
+
+                file = get_favorite_path(index)
 
                 if file:
                     link_open = file+'<br>'
-                    link_open += '<a href="'+file+'">Open in active window</a><br>'
-                    link_open += '<a href="remove.'+file+'">Remove from the favorites</a>'
+                    link_open += '&nbsp;&nbsp;<a href="'+file+'">Open in active window</a><br>'
+                    link_open += '&nbsp;&nbsp;<a href="remove.'+file+'">Remove from the favorites</a>'
 
                     html = tooltip_template % (link_open)
 
                     def open(arg):
                         view.hide_popup()
                         if arg.startswith('remove.'):
-                            remove_from_favorites(file)
+                            remove_from_favorites(file, per_project)
                         else:
                             open_path(arg)
 
