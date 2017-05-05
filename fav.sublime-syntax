@@ -15,5 +15,5 @@ contexts:
         3: entity.name.section
         4: entity.name.section
 
-    - match: '\b(Add|Edit|Refresh)\b'
+    - match: '\b(Add|Edit|Refresh|Open all)\b'
       scope: keyword.control.example-c

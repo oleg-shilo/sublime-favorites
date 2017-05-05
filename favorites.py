@@ -10,7 +10,7 @@ import socket
 import subprocess
 import errno
 
-# version = 1.0.2
+# version = 1.0.3
 
 if sys.version_info < (3, 3):
     raise RuntimeError('Favorites works with Sublime Text 3 only.')
@@ -140,7 +140,7 @@ def focus_prev_view_group():
     except:
         pass
 # -------------------------
-def remove_from_favorites(arg, per_project=False):
+def remove_from_favorites(arg, per_project):
     file = arg
     lines = []
     for file in get_favorites(per_project):
@@ -160,6 +160,16 @@ def refresh_favorites():
     panel_view = get_panel_view()
     if panel_view:
         panel_view.run_command(plugin_name+'_generator')
+# -------------------------
+def open_all_favorites(per_project):
+    
+    for file in get_favorites(per_project):
+        view = sublime.active_window().find_open_file(file)
+        if not view:
+            view = sublime.active_window().open_file(file)
+
+    if view:
+        sublime.active_window().focus_view(view)
 # -------------------------
 def open_path(file):
     view = sublime.active_window().find_open_file(file)
@@ -207,8 +217,8 @@ class favorites_generator(sublime_plugin.TextCommand):
 
         lines = get_favorites(False)
 
-        map = "Add   Edit"        
-        map += "\n---------------"        
+        map = "Add    Edit   Open all"        
+        map += "\n-----------------------"        
         for line in lines:
             map += "\n"+extract_title(line)
 
@@ -281,6 +291,20 @@ class favorites_listener(sublime_plugin.EventListener):
                     html = tooltip_template % (html_content)
 
                     callback = refresh
+
+                elif command == "Open" or "all" :
+                    def open(arg):
+                        view.hide_popup()
+                        per_project = (arg == 'proj')
+                        open_all_favorites(per_project)
+
+                    html_content = '<a href="edit">Open all favorites files</a>'
+                    if project:
+                        html_content += '<br><a href="proj">Open all "'+os.path.basename(project).replace('.sublime-project', '')+'" project favorites files</a>'
+
+                    html = tooltip_template % (html_content)
+
+                    callback = open
     
                 elif command == "refresh":
                     def refresh(arg):
@@ -304,7 +328,11 @@ class favorites_listener(sublime_plugin.EventListener):
                 if file:
                     link_open = file+'<br>'
                     link_open += '&nbsp;&nbsp;<a href="'+file+'">Open in active window</a><br>'
-                    link_open += '&nbsp;&nbsp;<a href="remove.'+file+'">Remove from the favorites</a>'
+                    link_open += '&nbsp;&nbsp;<a href="remove.'+file+'">Remove from the'
+                    if per_project:
+                        link_open += " project's favorites</a>"
+                    else:    
+                        link_open += ' favorites</a>'
 
                     html = tooltip_template % (link_open)
 
@@ -396,7 +424,7 @@ def refresh_panel_for(view):
 # ===============================================================================
 class event_listener(sublime_plugin.EventListener):
     panel_closed_group = -1
-    pre_close_active = 0
+    pre_close_active = None
     can_close = False
     # -----------------
     def on_load(self, view):
@@ -428,8 +456,9 @@ class event_listener(sublime_plugin.EventListener):
             window.run_command("set_layout", layout)
 
         def focus_source_code():
-            window.focus_group(event_listener.pre_close_active[0])
-            window.focus_view(event_listener.pre_close_active[1])
+            if event_listener.pre_close_active:
+                window.focus_group(event_listener.pre_close_active[0])
+                window.focus_view(event_listener.pre_close_active[1])
 
         enabled = settings().get('close_empty_group_on_closing_panel', True)
 
