@@ -51,12 +51,28 @@ To start working with Favorites just make the favorites panel visible (e.g. [alt
     Double-click the `Edit` command at the top of the panel.  
     Alternatively, hover over `Edit` command at the top of the panel and then click `Edit...` on the tooltip.
 
+6. *Project specific favorites*
+    The plugin maintains a separate list of favorites per project. It is merged with the global favorites if the project file is loaded into ST. The project favorites are always placed in the bottom section of the favorites panel. All per-project items can be dealt with (e.g. Add, Remove, edit) the same ways as global ones. 
+
+7. *File aliases*
+    By default the items in the favorites panel appears with their file name listed. However if a custom name is more beneficial a file alias can be assigned to the item in the data file via "Edit favorites" command.
+
+    The format is simple: `<file_alias>|<file_path>`: 
+    ``` 
+    shelloverlay|Q:\Extras\Utils\TortoiseIconOverlays.cs
+    ```
+
+![](images/global_vs_project.png)
+
+
+Practically all functionality available via favorites panel is also available via *Command Palette*:
+![](images/commands.png)
 
 ## Settings
 
 You can also configure plugin to:
 1. Hide the group on closing the panel when it is the only view in the group.
-2. Always place favorites panel in the individual most-right column. Only up to 4 columns layout is supported.
+2. Always place favorites panel in the individual most-right column. Only up to 4 columns layout is supported.is alse available
 3. Use [Favorite Files](https://github.com/facelessuser/FavoriteFiles) plugin data file.<br> 
 The integration is limited to reading `Favorite Files` data file, flattening it and allowing to open files on double-click on the item in the Favorites panel.
 

@@ -1,0 +1,12 @@
+Features/Changes:
+
+1. Added commands for all major operations
+2. Issues #2: Allow favorites.txt file to be created per-project, at project root
+3. Issues #3: Allow favorites.yml as alternative to favorites.txt
+    By default the items in the favorites panel appears with their file name listed. However if a custom name is more beneficial a file alias can be assigned to the item in the data file via "Edit favorites" command.
+
+    The format is simple: <file_alias>|<file_path>:
+    ```
+    shelloverlay|Q:\Extras\Utils\TortoiseIconOverlays.cs
+    ```
+4. Issues #4: Allow opening all favorites with a single command
