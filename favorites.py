@@ -10,7 +10,7 @@ import socket
 import subprocess
 import errno
 
-# version = 1.0.3
+# version = 1.0.4
 
 if sys.version_info < (3, 3):
     raise RuntimeError('Favorites works with Sublime Text 3 only.')
@@ -78,7 +78,7 @@ def get_favorites(per_project):
     else:    
         file = favorites_data_path(per_project)
         lines = []
-        if os.path.exists(file):
+        if file and os.path.exists(file):
             with codecs.open(file, "r", encoding='utf8') as f:
                 content = f.read().strip()
                 if content != '':
