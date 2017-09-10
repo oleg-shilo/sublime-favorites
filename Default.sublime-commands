@@ -30,6 +30,15 @@
     },
     {
         "caption": "Favorites: Open all (project's)",
-        "command": "openall_proj_favoritese"
+        "command": "openall_proj_favorites"
+    }
+    ,
+    {
+        "caption": "Favorites: Remove all (global)",
+        "command": "remove_favorites_file"
+    },
+    {
+        "caption": "Favorites: Remove all (project's)",
+        "command": "remove_proj_favorites_file"
     }
 ]

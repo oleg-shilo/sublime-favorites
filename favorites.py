@@ -94,6 +94,12 @@ def set_favorites(lines, per_project):
         with codecs.open(file, "w", encoding='utf8') as f:
             f.write('\n'.join(lines))
 # -------------------------
+def del_favorites(lines, per_project):
+    if not using_Favorite_Files_data():
+        file = favorites_data_path(per_project)
+        with codecs.open(file, "w", encoding='utf8') as f:
+            f.write('\n'.join(lines))
+# -------------------------
 def get_favorite_path(index):
     # print(index)    
     lines = get_favorites(False)
@@ -146,6 +152,11 @@ def remove_from_favorites(arg, per_project):
     for file in get_favorites(per_project):
         if file != arg:
             lines.append(file)
+    set_favorites(lines, per_project)
+    refresh_favorites() 
+# -------------------------
+def remove_all_from_favorites(per_project):
+    lines = []
     set_favorites(lines, per_project)
     refresh_favorites() 
 # -------------------------
@@ -244,12 +255,25 @@ class edit_proj_favorites_file(sublime_plugin.TextCommand):
     def run(self, edit):
         edit_favorites(True)
 # -------------------------
+class remove_favorites_file(sublime_plugin.TextCommand):
+    # -----------------
+    def run(self, edit):
+        remove_all_from_favorites(False)
+# -------------------------
+class remove_proj_favorites_file(sublime_plugin.TextCommand):
+    # -----------------
+    def is_enabled(self):
+         return self.view.window().project_file_name() != None
+    # -----------------
+    def run(self, edit):
+        remove_all_from_favorites(True)
+# -------------------------
 class openall_favorites(sublime_plugin.TextCommand):
     # -----------------
     def run(self, edit):
         open_all_favorites(False)
 # -------------------------
-class openall_proj_favoritese(sublime_plugin.TextCommand):
+class openall_proj_favorites(sublime_plugin.TextCommand):
     # -----------------
     def is_enabled(self):
          return self.view.window().project_file_name() != None
