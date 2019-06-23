@@ -1,0 +1,10 @@
+Features/Changes:
+
+1. Removed default key binding as it conflicts with default `alt+f` OS handling.
+   Users should configure custom binding instead:
+   _Open keymap menu_
+   Preferences > Key Bindings > Default (...).sublime-keymap - User
+   _Add mapping:_
+   ```
+   { "keys": ["alt+f", "alt+f"], "command": "show_favorites" }
+   ```

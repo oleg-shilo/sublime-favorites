@@ -10,7 +10,7 @@ import socket
 import subprocess
 import errno
 
-# version = 1.0.6
+# version = 1.0.7
 
 if sys.version_info < (3, 3):
     raise RuntimeError('Favorites works with Sublime Text 3 only.')
