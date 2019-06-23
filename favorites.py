@@ -10,7 +10,7 @@ import socket
 import subprocess
 import errno
 
-# version = 1.0.4
+# version = 1.0.6
 
 if sys.version_info < (3, 3):
     raise RuntimeError('Favorites works with Sublime Text 3 only.')
@@ -36,7 +36,7 @@ def favorites_data_path(per_project):
             file = project + '.favorites'
     else:
         file = os.path.join(sublime.packages_path(), 'User', 'favorites.txt')
-    
+
     if file and not path.exists(file):
         with open(file, "w") as f:
             f.write('')
@@ -47,25 +47,25 @@ def show_integration_constrains_message():
     sublime.error_message('Since you are using "Favorite Files" plugin integration '+
                           'you have to use "Favorite Files" commands via command palette '+
                           'to add, remove or edit the file list.')
-    
+
 # -------------------------
 def get_favorite_files_data():
-    """ 
+    """
         Integration with Favorit_Files plugin
-        It goes only as far as reading its data file, flattening it and allowing to 
-        open files on double-click on the item in the Favorites panel  
+        It goes only as far as reading its data file, flattening it and allowing to
+        open files on double-click on the item in the Favorites panel
     """
     import json
 
     file_name = os.path.join(sublime.packages_path(), 'User', 'favorite_files_list.json')
-    
-    with open(file_name) as data_file:    
+
+    with open(file_name) as data_file:
         data = json.load(data_file)
 
-    result = []    
+    result = []
     for f in data["files"]:
         result.append(f)
-         
+
     for name in data["groups"].keys():
         for f in data["groups"][name]:
             result.append(f)
@@ -75,7 +75,7 @@ def get_favorite_files_data():
 def get_favorites(per_project):
     if using_Favorite_Files_data():
         return get_favorite_files_data()
-    else:    
+    else:
         file = favorites_data_path(per_project)
         lines = []
         if file and os.path.exists(file):
@@ -88,8 +88,8 @@ def get_favorites(per_project):
 # -------------------------
 def set_favorites(lines, per_project):
     if using_Favorite_Files_data():
-        show_integration_constrains_message()        
-    else:    
+        show_integration_constrains_message()
+    else:
         file = favorites_data_path(per_project)
         with codecs.open(file, "w", encoding='utf8') as f:
             f.write('\n'.join(lines))
@@ -101,16 +101,16 @@ def del_favorites(lines, per_project):
             f.write('\n'.join(lines))
 # -------------------------
 def get_favorite_path(index):
-    # print(index)    
+    # print(index)
     lines = get_favorites(False)
-    p_lines = get_favorites(True)    
+    p_lines = get_favorites(True)
 
     if index < len(lines):
         return extract_path(lines[index]);
 
     index -= len(lines)
     index -= items_offset # project favorites will have extra two lines in the header (items_offset)
-    if index >= 0 and index < len(p_lines) :    
+    if index >= 0 and index < len(p_lines) :
         # print(index, '/',len(p_lines))
         return extract_path(p_lines[index]);
 
@@ -127,16 +127,16 @@ def add_active_view(arg=None, per_project=False):
         file = arg
     else:
         file = sublime.active_window().active_view().file_name()
-    
+
     lines = get_favorites(per_project)
     if not file in lines:
         lines.append(file)
         set_favorites(lines, per_project)
 
-    refresh_favorites() 
+    refresh_favorites()
 # -------------------------
 def focus_prev_view_group():
-    try:   
+    try:
         if favorites_listener.last_active_view:
             if favorites_listener.last_active_view == get_panel_view():
                 group, _ = sublime.active_window().get_view_index(favorites_listener.last_active_view)
@@ -153,16 +153,16 @@ def remove_from_favorites(arg, per_project):
         if file != arg:
             lines.append(file)
     set_favorites(lines, per_project)
-    refresh_favorites() 
+    refresh_favorites()
 # -------------------------
 def remove_all_from_favorites(per_project):
     lines = []
     set_favorites(lines, per_project)
-    refresh_favorites() 
+    refresh_favorites()
 # -------------------------
 def edit_favorites(per_project):
     if using_Favorite_Files_data():
-        show_integration_constrains_message()        
+        show_integration_constrains_message()
     else:
         focus_prev_view_group()
         open_path(favorites_data_path(per_project))
@@ -173,7 +173,7 @@ def refresh_favorites():
         panel_view.run_command(plugin_name+'_generator')
 # -------------------------
 def open_all_favorites(per_project):
-    
+
     for item in get_favorites(per_project):
         file = extract_path(item)
         view = sublime.active_window().find_open_file(file)
@@ -195,7 +195,7 @@ def extract_title(text):
         parts = text.split('|')
         if len(parts) == 1:
             return path.basename(text.strip())
-        else:    
+        else:
             return parts[0]
     return ''
 # -------------------------
@@ -204,7 +204,7 @@ def extract_path(text):
         parts = text.split('|')
         if len(parts) > 1:
             return parts[len(parts)-1].strip()
-        else:    
+        else:
             return text
 # -------------------------
 tooltip_template = """
@@ -219,7 +219,7 @@ tooltip_template = """
 # -------------------------
 class show_favorites(sublime_plugin.TextCommand):
     def run(self, edit):
-        show_panel.run(self, edit);        
+        show_panel.run(self, edit);
 # -------------------------
 # ======================================================
 class add_favorites(sublime_plugin.TextCommand):
@@ -227,7 +227,7 @@ class add_favorites(sublime_plugin.TextCommand):
     def run(self, edit):
         add_favorites.do(self.view, False)
     # -----------------
-    def do(view, per_project):    
+    def do(view, per_project):
         file = view.file_name()
         if file:
             add_active_view(file, per_project)
@@ -291,14 +291,14 @@ class favorites_generator(sublime_plugin.TextCommand):
 
         lines = get_favorites(False)
 
-        map = "Add    Edit   Open all"        
-        map += "\n-----------------------"        
+        map = "Add    Edit   Open all"
+        map += "\n-----------------------"
         for line in lines:
             map += "\n"+extract_title(line)
 
-        project = sublime.active_window().project_file_name()    
+        project = sublime.active_window().project_file_name()
         if project:
-            map += '\n\n--- "'+path.basename(project).replace('.sublime-project', '" project')+' ---'        
+            map += '\n\n--- "'+path.basename(project).replace('.sublime-project', '" project')+' ---'
             p_lines = get_favorites(True)
             for line in p_lines:
                 map += '\n' + extract_title(line)
@@ -326,7 +326,7 @@ class favorites_listener(sublime_plugin.EventListener):
         if view.file_name() == panel_file():
             row, col = view.rowcol(point)
             if row == 0:
-                
+
                 project = sublime.active_window().project_file_name()
 
                 callback = None
@@ -337,7 +337,7 @@ class favorites_listener(sublime_plugin.EventListener):
                         view.hide_popup()
                         per_project = (arg == 'add_to_proj')
                         add_active_view(None, per_project)
-                                            
+
                     file = sublime.active_window().active_view().file_name()
                     link_open = ''
                     if project:
@@ -351,7 +351,7 @@ class favorites_listener(sublime_plugin.EventListener):
 
                     html = tooltip_template % (link_open)
                     callback = add
-    
+
                 elif command == "edit":
                     def refresh(arg):
                         view.hide_popup()
@@ -379,20 +379,20 @@ class favorites_listener(sublime_plugin.EventListener):
                     html = tooltip_template % (html_content)
 
                     callback = open
-    
+
                 elif command == "refresh":
                     def refresh(arg):
                         view.hide_popup()
                         refresh_favorites()
                     html = tooltip_template % ('<a href="edit">Refresh favorites</a>')
                     callback = refresh
-    
+
                 else:
                     return
 
                 view.show_popup(html, location=point, flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY, max_width=600, on_navigate=callback)
 
-            else: 
+            else:
                 index = row-items_offset
                 global_list = get_favorites(False)
                 per_project = (index >= len(global_list))
@@ -405,7 +405,7 @@ class favorites_listener(sublime_plugin.EventListener):
                     link_open += '&nbsp;&nbsp;<a href="remove.'+file+'">Remove from the'
                     if per_project:
                         link_open += " project's favorites</a>"
-                    else:    
+                    else:
                         link_open += ' favorites</a>'
 
                     html = tooltip_template % (link_open)
@@ -433,7 +433,7 @@ class favorites_listener(sublime_plugin.EventListener):
                 elif row == 0:
                     command = view.substr(view.word(point)).lower()
                     if command == 'add':
-                        last_view = favorites_listener.last_active_view 
+                        last_view = favorites_listener.last_active_view
                         if last_view != view:
                             add_active_view(last_view.file_name())
 
@@ -443,14 +443,14 @@ class favorites_listener(sublime_plugin.EventListener):
                         refresh_favorites()
 
 
-######################################################################################################################### 
-# 
+#########################################################################################################################
+#
 # ============================================================
 # Layout management
 # ============================================================
 def settings():
     return sublime.load_settings(plugin_name+".sublime-settings")
-# -----------------    
+# -----------------
 def panel_file():
 
     plugin_dir = ''
