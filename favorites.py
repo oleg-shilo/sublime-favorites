@@ -10,7 +10,7 @@ import socket
 import subprocess
 import errno
 
-# version = 1.0.7
+# version = 1.0.8
 
 if sys.version_info < (3, 3):
     raise RuntimeError('Favorites works with Sublime Text 3 only.')
@@ -421,6 +421,7 @@ class favorites_listener(sublime_plugin.EventListener):
     # -----------------
     def on_post_text_command(self, view, command_name, args):
         # process double-click on code panel view`
+        per_project = sublime.active_window().project_file_name()!= None
         if view.file_name() == panel_file():
             if command_name == 'drag_select' and 'by' in args.keys() and args['by'] == 'words':
                 point = view.sel()[0].begin()
@@ -438,7 +439,7 @@ class favorites_listener(sublime_plugin.EventListener):
                             add_active_view(last_view.file_name())
 
                     elif command == 'edit':
-                        edit_favorites()
+                        edit_favorites(per_project)
                     elif command == 'refresh':
                         refresh_favorites()
 
