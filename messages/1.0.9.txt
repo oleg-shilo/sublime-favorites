@@ -1,0 +1,3 @@
+Features/Changes:
+
+1. #10: messages.json is invalid JSON (missing comma after "1.0.4"), Package Control cannot show install/upgrade messages
